@@ -1,0 +1,14 @@
+delivery:
+  http-server:
+    listen-address: 0.0.0.0:10001
+    read-timeout: 60s
+    write-timeout: 60s
+    body-size-limit: 1048576
+    graceful-timeout: 60s
+
+  broker:
+    retry-delay: 5s
+    delete-timeout: 5s
+    handler-timeout: 60s
+    max-number-of-messages: 5
+    wait-time-seconds: 10

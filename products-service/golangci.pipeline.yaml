@@ -1,0 +1,32 @@
+version: "2"
+
+run:
+  timeout: 5m
+
+linters:
+  enable:
+    - gocheckcompilerdirectives
+    - misspell
+    - predeclared
+    - testifylint
+    - gocritic
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+    - lll
+  settings:
+    misspell:
+      locale: US
+    staticcheck:
+      checks:
+        - "all"
+        - "-ST1000"
+        - "-ST1003"
+    testifylint:
+      enable-all: true
+      disable:
+        - require-error
+        - suite-thelper
+    lll:
+      line-length: 120

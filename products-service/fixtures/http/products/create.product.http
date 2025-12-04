@@ -1,0 +1,33 @@
+### Create a product: MDE04
+POST {{env}}/products-api/v1/products
+Content-Type: application/json
+
+{
+  "name": "MacBook Pro 14\" Late 2025 Space Black (MDE04)",
+  "vendor": "Apple",
+  "description": "14-inch MacBook Pro with M5, 10-core CPU, 10-core GPU, 16GB RAM, 512GB SSD, Space Black.",
+  "price": 1599.00
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 201");
+    });
+%}
+
+### Create a product: MDE14
+POST {{env}}/products-api/v1/products
+Content-Type: application/json
+
+{
+  "name": "MacBook Pro 14\" Late 2025 Space Black (MDE14)",
+  "vendor": "Apple",
+  "description": "14-inch MacBook Pro with M5, 10-core CPU, 10-core GPU, 16GB RAM, 1TB SSD, Space Black.",
+  "price": 1799.00
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 201, "Response status is not 201");
+    });
+%}

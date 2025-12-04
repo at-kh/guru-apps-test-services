@@ -1,0 +1,155 @@
+name: Go Linter
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  GO_VERSION: '1.25.5'
+
+jobs:
+  lint:
+    name: Lint - ${{ matrix.service }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        service:
+          - products-service
+          - notifications-service
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: Cache Go modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/go-build
+            ${{ matrix.service }}/go.sum
+          key: ${{ runner.os }}-go-${{ hashFiles(format('{0}/go.sum', matrix.service)) }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
+      - name: Run golangci-lint
+        uses: golangci/golangci-lint-action@v9
+        with:
+          version: v2.6
+          working-directory: ${{ matrix.service }}
+          args: --config=golangci.pipeline.yaml
+
+  format:
+    name: Format Check - ${{ matrix.service }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        service:
+          - products-service
+          - notifications-service
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: Check formatting
+        working-directory: ${{ matrix.service }}
+        run: |
+          if [ "$(gofmt -s -l . | wc -l)" -gt 0 ]; then
+            echo "Code is not formatted. Run 'go fmt ./...'"
+            gofmt -s -d .
+            exit 1
+          fi
+
+  vet:
+    name: Go Vet - ${{ matrix.service }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        service:
+          - products-service
+          - notifications-service
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: Cache Go modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/go-build
+            ${{ matrix.service }}/go.sum
+          key: ${{ runner.os }}-go-${{ hashFiles(format('{0}/go.sum', matrix.service)) }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
+      - name: Run go vet
+        working-directory: ${{ matrix.service }}
+        run: |
+          go vet ./...
+
+  aligo:
+    name: Aligo Check - ${{ matrix.service }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        service:
+          - products-service
+          - notifications-service
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: Cache Go modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/go-build
+            ${{ matrix.service }}/go.sum
+          key: ${{ runner.os }}-go-${{ hashFiles(format('{0}/go.sum', matrix.service)) }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
+      - name: Cache aligo
+        uses: actions/cache@v4
+        with:
+          path: ~/go/bin
+          key: ${{ runner.os }}-aligo-v2
+          restore-keys: |
+            ${{ runner.os }}-aligo-
+
+      - name: Install aligo
+        run: |
+          go install github.com/essentialkaos/aligo/v2@latest
+
+      - name: Run aligo check
+        working-directory: ${{ matrix.service }}
+        run: |
+          aligo check ./...

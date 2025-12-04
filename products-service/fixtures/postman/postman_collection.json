@@ -1,0 +1,241 @@
+{
+	"info": {
+		"_postman_id": "8fe1b49a-4051-4296-8ac1-a492e1af1af6",
+		"name": "GuruApps test services",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "18909485"
+	},
+	"item": [
+		{
+			"name": "notifications-service",
+			"item": [
+				{
+					"name": "Healthcheck",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{notificationsBaseURL}}/notifications-api/v1/health",
+							"host": [
+								"{{notificationsBaseURL}}"
+							],
+							"path": [
+								"notifications-api",
+								"v1",
+								"health"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "products-service",
+			"item": [
+				{
+					"name": "Products",
+					"item": [
+						{
+							"name": "Create",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Response status is 201\", function () {",
+											"    pm.response.to.have.status(201);",
+											"});",
+											"",
+											"if (pm.response.code === 201) {",
+											"    var jsonData = pm.response.json();",
+											"    if (jsonData && jsonData.id) {",
+											"        pm.environment.set(\"last_created_id\", jsonData.id);",
+											"    }",
+											"}"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"MacBook Pro 14\\\" Late 2025 Space Black (MDE04)\",\n  \"vendor\": \"Apple\",\n  \"description\": \"14-inch MacBook Pro with M5, 10-core CPU, 10-core GPU, 16GB RAM, 512GB SSD, Space Black.\",\n  \"price\": 1599.00\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{productsBaseURL}}/products-api/v1/products",
+									"host": [
+										"{{productsBaseURL}}"
+									],
+									"path": [
+										"products-api",
+										"v1",
+										"products"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get all (default)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Response status is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{productsBaseURL}}/products-api/v1/products",
+									"host": [
+										"{{productsBaseURL}}"
+									],
+									"path": [
+										"products-api",
+										"v1",
+										"products"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get all (pagination)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Response status is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{productsBaseURL}}/products-api/v1/products?limit=2&offset=1",
+									"host": [
+										"{{productsBaseURL}}"
+									],
+									"path": [
+										"products-api",
+										"v1",
+										"products"
+									],
+									"query": [
+										{
+											"key": "limit",
+											"value": "2"
+										},
+										{
+											"key": "offset",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete by id",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Response status is 204\", function () {",
+											"    pm.response.to.have.status(204);",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"test_product\",\n    \"description\": \"test_description\",\n    \"price\": 2.5\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{productsBaseURL}}/products-api/v1/products/:id",
+									"host": [
+										"{{productsBaseURL}}"
+									],
+									"path": [
+										"products-api",
+										"v1",
+										"products",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "{{last_created_id}}"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Healthcheck",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{productsBaseURL}}/products-api/v1/health",
+							"host": [
+								"{{productsBaseURL}}"
+							],
+							"path": [
+								"products-api",
+								"v1",
+								"health"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,119 @@
+services:
+  psql:
+    container_name: psql
+    image: postgres:16
+    environment:
+      POSTGRES_DB: "products_service"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "root"
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./psql:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - test-services
+
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - "./prometheus.yml:/etc/prometheus/prometheus.yml"
+    ports:
+      - 9090:9090
+    depends_on:
+      - products
+    networks:
+      - test-services
+
+  localstack:
+    container_name: localstack
+    image: localstack/localstack:latest
+    ports:
+      - "4566:4566"
+    environment:
+      - SERVICES=sqs,s3
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - AWS_DEFAULT_REGION=us-east-1
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+    volumes:
+      - "./init-localstack.sh:/etc/localstack/init/ready.d/init-localstack.sh"
+      - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    networks:
+      - test-services
+
+  products:
+    container_name: products-service
+    build:
+      context: ./products-service
+      dockerfile: Dockerfile
+      args:
+        SERVICE_NAME: products-service
+        VERSION: 1.0.0
+    ports:
+      - "10000:10000"
+    env_file:
+      - ./products-service/.env
+    deploy:
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--spider", "http://127.0.0.1:10000/products-api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    depends_on:
+      psql:
+        condition: service_healthy
+      localstack:
+        condition: service_started
+    networks:
+      - test-services
+
+  notifications:
+    container_name: notifications-service
+    build:
+      context: ./notifications-service
+      dockerfile: Dockerfile
+      args:
+        SERVICE_NAME: notifications-service
+        VERSION: 1.0.0
+    ports:
+      - "10001:10001"
+    env_file:
+      - ./notifications-service/.env
+    deploy:
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--spider", "http://127.0.0.1:10001/notifications-api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    depends_on:
+      - localstack
+    networks:
+      - test-services
+
+networks:
+  test-services:
+    name: test-services
+    driver: bridge
+
+volumes:
+  psql:

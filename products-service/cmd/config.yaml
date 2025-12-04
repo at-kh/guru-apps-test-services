@@ -1,0 +1,22 @@
+delivery:
+  http-server:
+    listen-address: 0.0.0.0:10000
+    read-timeout: 60s
+    write-timeout: 60s
+    body-size-limit: 1048576
+    graceful-timeout: 60s
+
+
+storage:
+  postgres:
+    dsn: postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable
+    driver: pgx
+    dialect: postgres
+    max-retries: 5
+    retry-delay: 10s
+    query-timeout: 10s
+    auto-migrate: true
+    migration-directory: dbschema/migrations
+    migration-direction: up
+    conn-max-idle-num: 10
+    conn-max-open-num: 50

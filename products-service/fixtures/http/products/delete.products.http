@@ -1,0 +1,8 @@
+### Delete a product by id
+DELETE {{env}}/products-api/v1/products/e353883a-8030-430b-8fd6-d473ed720826
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 204, "Response status is not 204");
+    });
+%}
