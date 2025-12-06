@@ -9,8 +9,8 @@ import (
 // DefaultPath - default path for config.
 const DefaultPath = "./cmd/config.yaml"
 
-// Config defines the properties of the application configuration.
 type (
+	// Config defines the properties of the application configuration.
 	Config struct {
 		Delivery Delivery `yaml:"delivery" valid:"check,deep"`
 	}

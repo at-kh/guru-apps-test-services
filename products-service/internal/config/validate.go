@@ -82,8 +82,23 @@ func (p Postgres) Validate() []string {
 	if p.MigrationDirectory == "" {
 		errs = append(errs, "migration_directory::is_required")
 	}
+	if p.MigrationDirection == "" {
+		errs = append(errs, "migration_direction::is_required")
+	}
 	if p.RetryDelay == 0 {
 		errs = append(errs, "retry_delay::is_required")
+	}
+	if p.ConnMaxIdleNum == 0 {
+		errs = append(errs, "conn_max_idle_num::is_required")
+	}
+	if p.ConnMaxOpenNum == 0 {
+		errs = append(errs, "conn_max_open_num::is_required")
+	}
+	if p.MaxRetries == 0 {
+		errs = append(errs, "max_retries::is_required")
+	}
+	if p.MaxRetries != 0 && p.MaxRetries < 0 {
+		errs = append(errs, "max_retries::min_value_is::0")
 	}
 
 	return errs

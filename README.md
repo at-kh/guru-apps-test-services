@@ -11,31 +11,6 @@ This project consists of two microservices:
 
 Both services are containerized using Docker and orchestrated with Docker Compose.
 
-## 🏗️ Architecture
-
-```
-┌─────────────────┐     ┌──────────────────┐
-│  Products       │────▶│   PostgreSQL     │
-│  Service        │     │   (Port 5432)    │
-│  (Port 10000)   │     └──────────────────┘
-└────────┬────────┘
-         │
-         │ SQS
-         ▼
-┌─────────────────┐     ┌──────────────────┐
-│ Notifications   │────▶│   LocalStack     │
-│ Service         │     │   (Port 4566)    │
-│ (Port 10001)    │     └──────────────────┘
-└─────────────────┘
-         │
-         │ Metrics
-         ▼
-┌─────────────────┐
-│   Prometheus    │
-│   (Port 9090)   │
-└─────────────────┘
-```
-
 ## 🚀 Quick Start
 
 ### Start All Services
@@ -136,6 +111,10 @@ Run the HTTP files:
 
 Import the Postman collection from:
 - `products-service/fixtures/postman/postman_collection.json`
+
+Set environment variables in Postman:
+- `productsBaseURL` - `http://127.0.0.1:10000`
+- `notificationsBaseURL` - `http://127.0.0.1:10001`
 
 #### 3. Using cURL
 

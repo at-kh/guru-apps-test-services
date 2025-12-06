@@ -9,8 +9,8 @@ import (
 // DefaultPath - default path for config.
 const DefaultPath = "./cmd/config.yaml"
 
-// Config defines the properties of the application configuration.
 type (
+	// Config defines the properties of the application configuration.
 	Config struct {
 		Delivery Delivery `yaml:"delivery" valid:"check,deep"`
 		Storage  Storage  `yaml:"storage"  valid:"check,deep"`
@@ -48,13 +48,13 @@ type (
 		Driver             string        `yaml:"driver"                valid:"required"`
 		Dialect            string        `yaml:"dialect"               valid:"required"`
 		MigrationDirectory string        `yaml:"migration-directory"   valid:"required"`
-		MigrationDirection string        `yaml:"migration-direction"   validate:"required,oneof=up down"`
+		MigrationDirection string        `yaml:"migration-direction"   valid:"required"`
 		ConnMaxLifetime    time.Duration `yaml:"conn-max-lifetime"`
 		RetryDelay         time.Duration `yaml:"retry-delay"           valid:"required"`
 		QueryTimeout       time.Duration `yaml:"query-timeout"`
-		ConnMaxIdleNum     int           `yaml:"conn-max-idle-num"`
-		ConnMaxOpenNum     int           `yaml:"conn-max-open-num"`
-		MaxRetries         int           `yaml:"max-retries"           validate:"required,gte=0"`
+		ConnMaxIdleNum     int           `yaml:"conn-max-idle-num"     valid:"required"`
+		ConnMaxOpenNum     int           `yaml:"conn-max-open-num"     valid:"required"`
+		MaxRetries         int           `yaml:"max-retries"           valid:"required,min=0"`
 		AutoMigrate        bool          `yaml:"auto-migrate"`
 	}
 )
